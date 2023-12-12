@@ -1,0 +1,452 @@
+/* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
+/* [ Created with wxMaxima version 22.04.0 ] */
+/* [wxMaxima: input   start ] */
+file_search(graphs);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+load(%);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+lfp : {}$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+infix ("implies")$
+"implies"(a,b) := not(a) or b$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+infix ("iff")$
+"iff"(a,b) := (a implies b) and (b implies a)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+infix ("!=")$
+"!="(a,b) := (not a = b)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+infix ("?=")$
+"?="(a,b) := is (a = b)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+prefix ("~")$
+"~"(a) := (not a)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+infix ("&")$
+"&"(a,b) := (a and b)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+infix ("..")$
+".."(a,b) := (makelist(i+1,i,a-1,b-1))$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+prefix ("~")$
+"~"(a) := (not a)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+infix("in")$
+"in"(a,b) := member(a, b)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+matchfix ("|","|")$
+| g | := if is_graph(g) or is_digraph(g) then S(vertices(g)) else length(g)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+matchfix ("||","||")$
+|| g || := cardinality(|g|)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+infix ("II")$
+"II"(a,b) := intersection(S(a),S(b))$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+SD(a,b) := setdifference(S(a),S(b));
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+infix ("U")$
+"U"(a,b) := if is_graph(a) then graph_union(a,b) else if is_digraph(a) then dgraph_union(a,b) else union(S(a),S(b))$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+infix ("++")$
+"++"(a,b) := cons(a,b)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+L(s) := if setp(s) then listify(s) else s$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+S(l) := if listp(l) then setify(l) else l$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+frp(l) := fst(random_permutation(l))$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+tflist(x,p) := map (lambda ([z], o : bop(p), if quantifier(o) then p : tflist(boundvar(p),second(p)),decide(subst(z,x,p),o)), L(|G|))$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+decide(z,o) := block(
+    [a],
+    if freevarp(z) then return(z),
+    if listp(z) then return(decidel(z,o)),
+    a : is(ev(z,nouns)),
+    if string(a) = "unknown" then return(z) else return(a)
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+decidel(l,o) := block(
+    if atom(first(l)) then return(quant(o,l)) else (
+        answer : (map (lambda ([z], decide(z,o)), l)),
+        if quantifier(o) then (if decidable(answer) then return(answer) else decide(answer,o)) else return(answer))
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+decidable(p) := listp(p) implies atom(fst(p))$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+exz(x,p) ::= (f : tflist(x,p), if atom(first(f)) then some (is, f) else some(is, decide (f,op(p))));
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+fa(x,p) ::= (f : tflist(x,p), if atom(first(f)) then every (is, f) else every(is, decide (f,op(p))));
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+boundvar(p) := first(args(p))$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+quant(o,l) := block(if (string(o) = "exz" or string(o) = "exists") then return(some (is,l)) else return(every (is,l)))$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+quantifier(o) := is ((string(o) = "exz") or (string(o) = "fa") or (string(o) = "forall") or (string(o) = "exists"))$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+fst(s) := if length(s) > 0 then first(s) else s$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+scnd(s) := if length(s) > 1 then second(s) else fst(s)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+thrd(s) := if length(s) > 2 then third(s) else fst(s)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+R([l]) := if listp(lfp) then l in fst(lfp) else l in lfp$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+unnest(l) := if listp(l) and listp(first(l)) then first(l) else l$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+lindex(m,l) := fst(sublist_indices(l,lambda ([u], m ?= u)))$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+uniquefreevars(f) := unique(freevarlist(f))$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+arity(f) := length(uniquefreevars(f))$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+E(x,y) := if is_digraph(G) then member (y, out_neighbors(x,G)) else member (x, neighbors(y,G))$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+cartprod(g,n) := apply(cartesian_product,map(setify,makelist(vertices(g),n)))$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+freevar(p) := freevarb(p,[])$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+freevarp(p) := not(freevarlist(p) = [])$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+truth_valuep(f) := string(f) = "true" or string(f) = "false"$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+dg(g) := draw_graph(g, show_id = true, redraw=true)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+bop(p) := if atom(p) then [] else op(p)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+EVEN : '((x=0) or exz(y,exz(z,R(y) and succ(y,z) and succ(z,x))))$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+TC : '(E(x,y) or exz(z,(E(x,z) and R(z,y))))$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+ADD : '(((y = 0) and (z = x)) or exz(u, exz(v, R(x,u,v) and succ(u,y) and succ(v,z))))$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+FS : '(exz(u, (R(x,u) and R(u,y)) and T(x,u,y)))$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+FR : '(E(x,y) or exz(u, (S(x,u) and E(u,y)) and T(x,u,y)))$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+FT : '((E(x,y) and (x != z) and (y != z)) or exz(u, E(x,u) and T(u,y,z) and (x != z)))$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+atoms(x) := if atom(x) then {x} else atoms(first(args(x))) U atoms(prest(args(x)))$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+freevarlist(x) := sublist(L(atoms(x)), lambda([u], not (integerp(u) or truth_valuep(u) or (u in boundvars(x)))))$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+psecond(x) := if |x| > 1 then second(x) else first(x)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+prest(x) := if |x| > 2 then rest(x) else psecond(x)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+boundvars(x) :=if atom(x) then {} else (
+    if quantifier(op(x)) then union({first(args(x))}, boundvars(prest(args(x)))) else union(boundvars(first(args(x))), boundvars(prest(args(x))))
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+succ(x,y) := (x + 1) = y$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+sstage(f) := map (lambda ([u], (stage(freshen(u)))),f)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+stage(f) := disjoin(false,union(map(lambda ([u],if FO(f,u) then u), cartprod(G,arity(f)))))$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+freshen(f) := psubst(map ("=", freevarlist(f), map(lambda([u], gensym(string(u))), freevarlist(f))),f)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+FO(f,l) := block(l,map("=",uniquefreevars(f),l),p:psubst((%%),f),ev(p,nouns))$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+LFP(g,f) := (G : g, lfp : {}, unless lfp ?= stage(f) do (lfp : stage(f)),lfp)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+SLFP([f]) := (G : first(f), lfp : {}, unless lfp ?= sstage(rest(f)) do (lfp : sstage(rest(f))),fst(lfp))$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+vd(v1,v2,g) := (j : 0,for i from 0 thru diameter(g) unless v2 in r_ball(v1,i,g) do (j : j + 1), if (j > diameter(g)) then inf else j)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+r_ball(a,r,g) := if r = 0 then (if integerp(a) then {a} else a) else r_ball(flatten(a++map(lambda([u],setify(neighbors(u,g))),flatten({a}))),r-1,g)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+drawham(g) := draw_graph(g, show_id = true, redraw=true, show_edges = vertices_to_path(hamilton_path(g)))$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+drawhc(g) := draw_graph(g,show_id=true,redraw=true,show_edges=vertices_to_path(hamilton_cycle(g)))$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+binary(n) := (ibase : 10, obase : 2, n : string(n), obase : 10, parse_string(n))$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+decar(n) := (obase : 10, n : string(n), ibase : 10, parse_string(n))$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+decary(nn) := (ibase : 2, nn : string(nn), decar(parse_string(nn)))$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+satFO(f,l) := block(
+    l,
+    map("=", uniquefreevars(f), l),
+    psubst(%%, f),
+    psubst([1=true,0=false],%%),
+    ev(%%, nouns)
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+varassign(f,l) := map("=", uniquefreevars(f), l)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+SAT(f) := map(lambda([u], varassign(f,u)), disjoin(false, union(map(lambda([u], if satFO(f, u) then u), cartprod(create_graph(2,[]), arity(f))))))$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+r_ball(a,r,g) := (if r = 0 then (if integerp(a) then {a} else a) else r_ball(flatten(adjoin(a,map(lambda([u],setify(neighbors(u,g))),flatten({a})))),r-1,g))$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+rl_ball(a,r,g) := flatten(setify(map(lambda([u],r_ball(u,r,g)),a)))$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+r_nbhd(a,r,g) := induced_subgraph(L(rl_ball(a,r,g)),g)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+G : complete_graph(10);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+fa(x, fa(y, x != y implies E(x,y)));
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+G : cycle_graph(10);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+fa(x, fa(y, x != y implies E(x,y)));
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+phi : '(exz(y, exz(z, E(x,y) and E(x,z) and y!=z)));
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+B : petersen_graph();
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+LFP(B,phi);
+/* [wxMaxima: input   end   ] */
+
+
+
+/* Old versions of Maxima abort on loading files that end in a comment. */
+"Created with wxMaxima 22.04.0"$
