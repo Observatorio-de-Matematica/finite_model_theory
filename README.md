@@ -1,4 +1,4 @@
-# finite_model_theory
+# Finite Model Theory
 A Maxima CAS package for finite model theory
 
 This package uses Maxima's graph package to 
